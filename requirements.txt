@@ -24,6 +24,7 @@ notebook>=6.4.0
 # NLP and Text Processing
 transformers>=4.5.1
 nltk>=3.6.2
+openai>=1.0.0
 
 # Utilities
 tqdm>=4.61.0
