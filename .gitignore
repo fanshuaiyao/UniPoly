@@ -1,2 +1,4 @@
 torch*
 /logs
+/data/processed
+nohup*

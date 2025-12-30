@@ -144,6 +144,7 @@ def main():
     
     # 设置计算设备：优先使用GPU，如果没有则使用CPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"当前使用的计算设备: {device}")
     
     # 忽略警告信息，保持输出简洁
     warnings.filterwarnings("ignore")

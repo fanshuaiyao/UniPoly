@@ -35,7 +35,7 @@ export CUDA_VISIBLE_DEVICES=1
 # &: 在后台运行
 nohup python scripts/train.py \
     --modalities smiles text graph fp geom \
-    --tasks tg er de td tm \
+    --tasks tg \
     --pretrained_model_path ./pretrained_models/saved_pretrained_model.pth \
     > ./logs/train.log 2>&1 &
 

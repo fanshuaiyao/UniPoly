@@ -16,5 +16,23 @@
                 "reaction_conditions": "70°C, N2 atmosphere"
             }
         }
+    },
+    "*CC(*)c1ccccc": {
+        "聚合物信息": {
+            "SMILES表示": "[*]CC([*])c1ccccc",
+            "聚合物类别": ["聚苯乙烯类", "聚乙烯基类"],
+            "结构名称": "poly(1-phenylethylene)",
+            "来源名称": "polystyrene",
+            "其他名称": ["poly(vinylbenzene)", "poly(styrene)"],
+            "缩写": "PS",
+            "化学式": "C8H8",
+            "分子量": 104.15,
+            "合成反应": {
+                "单体": "styrene",
+                "反应类型": "加成反应",
+                "反应机理": "自由基",
+                "反应条件": "70°C, N2 atmosphere"
+            }
+        }
     }
 }
