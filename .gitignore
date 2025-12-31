@@ -2,3 +2,9 @@ torch*
 /logs
 /data/processed
 nohup*
+# 忽略处理后的 .pt 数据文件
+*.pt
+# 忽略下载的数据集文件夹
+MoleculeSTM_FullData/
+# 忽略你之前生成的 processed 目录
+**/processed/
