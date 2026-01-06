@@ -1,0 +1,2 @@
+task,model_name,model_modality_list,avg_test_r2,std_test_r2,avg_test_mae,std_test_mae,avg_test_rmse,std_test_rmse,attention_weights
+down,UniEncoderAttention,"['smiles', 'fp']",-0.00086,0.0,2.315,0.0,2.323,0.0,[[0.39467937 0.60532063]]

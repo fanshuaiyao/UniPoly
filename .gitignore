@@ -9,3 +9,15 @@ MoleculeSTM_FullData/
 # 忽略你之前生成的 processed 目录
 **/processed/
 /pretrained_models
+
+# model checkpoints
+*.pth
+*.pt
+saved_models/
+pretrained_models/
+
+# logs & outputs
+logs/
+nohup.out
+plots/
+results/

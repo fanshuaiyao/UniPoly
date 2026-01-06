@@ -5,7 +5,7 @@ export CUDA_VISIBLE_DEVICES=0
 nohup python scripts/pretrain.py \
     --dataset_name smi_test \
     --modalities fp smiles\
-    --epochs 1 \
+    --epochs 10 \
     --batch_size 2 \
     > ./logs/pretrain.log 2>&1 &
 
