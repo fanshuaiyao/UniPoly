@@ -14,6 +14,11 @@ Uni-Poly 模型训练脚本
 """
 
 import os
+# 这里的端口必须和你本地转发到服务器的端口一致
+os.environ['HTTP_PROXY'] = 'http://127.0.0.1:7890'
+os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:7890'
+# 如果之前设置了镜像站，也可以在这里一起写死
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 import argparse
 import warnings
 import torch
@@ -116,7 +121,7 @@ def parse_arguments():
     parser.add_argument(
         '--batch_size',
         type=int,
-        default=32,
+        default=1,
         help="Batch size for training."
     )
     
@@ -151,8 +156,8 @@ def main():
     
     # 预训练模型配置字典：定义各模态使用的预训练模型路径
     pre_trained_model_dict = {
-        'smiles_model_name': "seyonec/PubChem10M_SMILES_BPE_450k",  # SMILES编码器：RoBERTa
-        'text_model_name': "GT4SD/multitask-text-and-chemistry-t5-base-augm",  # 文本编码器：T5
+        'smiles_model_name': "./pretrained_models/smiles450k",  # SMILES编码器：RoBERTa
+        'text_model_name': "./pretrained_models/T5",  # 文本编码器：T5
         'gnn_model_name': "./pretrained_models/Mole-BERT.pth",  # 图编码器：GIN (Mole-BERT)
         'geom_model_name': "./pretrained_models/schnet_qm9_heat_capacity_model.pth"  # 几何编码器：SchNet
     }

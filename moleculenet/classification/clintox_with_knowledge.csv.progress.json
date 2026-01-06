@@ -1,0 +1,9 @@
+{
+  "input_csv": "/home/fsy23/UniPoly/moleculenet/classification/clintox.csv",
+  "output_csv": "/home/fsy23/UniPoly/moleculenet/classification/clintox_with_knowledge.csv",
+  "smiles_col": "smiles",
+  "rows_written": 1484,
+  "done": true,
+  "elapsed_sec": 0.06,
+  "timestamp": "2026-01-06 12:46:18"
+}

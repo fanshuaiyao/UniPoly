@@ -34,9 +34,8 @@ export CUDA_VISIBLE_DEVICES=1
 # 2>&1: 将标准错误也重定向到同一个日志文件（2是标准错误，1是标准输出）
 # &: 在后台运行
 nohup python scripts/train.py \
-    --modalities smiles text graph fp geom \
-    --tasks tg \
-    --pretrained_model_path ./pretrained_models/saved_pretrained_model.pth \
+    --modalities smiles text graph fp \
+    --tasks lipo \
     > ./logs/train.log 2>&1 &
 
 # 脚本执行后会立即返回，训练在后台进行

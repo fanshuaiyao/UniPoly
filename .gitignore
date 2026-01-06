@@ -1,5 +1,5 @@
 torch*
-/logs
+/logs/*
 /data/processed
 nohup*
 # 忽略处理后的 .pt 数据文件
@@ -8,3 +8,4 @@ nohup*
 MoleculeSTM_FullData/
 # 忽略你之前生成的 processed 目录
 **/processed/
+/pretrained_models
