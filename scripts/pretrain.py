@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import json
 
@@ -23,13 +25,13 @@ def parse_arguments():
     parser.add_argument(
         '--smiles_model_name',
         type=str,
-        default="seyonec/PubChem10M_SMILES_BPE_450k",
+        default="./pretrained_models/smiles450k",
         help="Pretrained model name or path for SMILES"
     )
     parser.add_argument(
         '--text_model_name',
         type=str,
-        default="GT4SD/multitask-text-and-chemistry-t5-base-augm",
+        default="./pretrained_models/T5",
         help="Pretrained model name or path for Text"
     )
     parser.add_argument(
@@ -48,6 +50,11 @@ def parse_arguments():
         '--freeze_encoder',
         action='store_true',
         help="If set, freeze the pretrained model weights."
+    )
+    parser.add_argument(
+        '--debug_batch',
+        action='store_true',
+        help="If set, print a one-time brief summary of the first batch."
     )
     parser.add_argument(
         '--dataset_name',
@@ -95,6 +102,17 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
+
+    def _brief(x):
+        if x is None:
+            return "None"
+        if isinstance(x, torch.Tensor):
+            return f"shape={tuple(x.shape)}, dtype={x.dtype}, device={x.device}"
+        if isinstance(x, list) and (len(x) == 0 or all(isinstance(item, str) for item in x)):
+            first = x[0][:80] if len(x) > 0 else ""
+            suffix = "..." if len(x) > 0 and len(x[0]) > 80 else ""
+            return f"list[str] len={len(x)} first={first}{suffix}"
+        return type(x).__name__
     
     # Get all available GPUs
     if torch.cuda.is_available():
@@ -146,19 +164,28 @@ def main():
     model.train()
     for epoch in range(args.epochs):
         epoch_loss = 0.0
-        for data in dataloader:
+        for step, data in enumerate(dataloader):
             data = data.to(device)
-            print(data.x)
-            print(data.edge_index)
-            print(data.edge_attr)
-            print(data.batch)
-            print(data.smiles)
-            print(data.input_ids_smiles)
-            print(data.attention_mask_smiles)
-            print(data.text)
-            print(data.input_ids_text)
-            print(data.attention_mask_text)
-            print(data.fp)
+            if args.debug_batch and epoch == 0 and step == 0:
+                fields = [
+                    "x",
+                    "edge_index",
+                    "edge_attr",
+                    "batch",
+                    "input_ids_smiles",
+                    "attention_mask_smiles",
+                    "input_ids_text",
+                    "attention_mask_text",
+                    "fp",
+                    "x3d",
+                    "pos3d",
+                    "batch3d",
+                    "smiles",
+                    "text",
+                ]
+                print("First batch (brief):")
+                for field in fields:
+                    print(f"  {field}: {_brief(getattr(data, field, None))}")
             optimizer.zero_grad()
             _, embeddings = model(data)  # embeddings: [batch_size, num_modalities, embedding_dim]
             loss = compute_contrastive_loss(embeddings, temperature=args.temperature)

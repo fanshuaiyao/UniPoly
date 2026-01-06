@@ -22,7 +22,7 @@ class UniDataset(Dataset):
         self.transform = transform
         self.pre_transform = pre_transform
         # 载入 SMILES -> 文本描述映射
-        self.text_dict = json.load(open('./data/smiles_text_dict.json', 'r'))
+        self.text_dict = json.load(open('./data/smiles_test_dict.json', 'r'))
         # 处理后的 Data 列表
         self.data_list = []
         # 初始化分词器

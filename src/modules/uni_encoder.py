@@ -157,9 +157,11 @@ class EncoderModule(nn.Module):
         )
 
     def _encode_text_like(self, data, input_ids_attr: str, attention_mask_attr: str):
-        input_ids = getattr(data, input_ids_attr).to(self.encoder.device)
-        attention_mask = getattr(data, attention_mask_attr).to(self.encoder.device)
-        features = self.encoder(input_ids, attention_mask=attention_mask).last_hidden_state
+        device = next(self.encoder.parameters()).device
+        input_ids = getattr(data, input_ids_attr).to(device)
+        attention_mask = getattr(data, attention_mask_attr).to(device)
+
+        features = self.encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
         return self.projection(self.norm(features[:, 0, :]))
 
 
