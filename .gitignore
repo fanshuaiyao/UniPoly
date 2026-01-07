@@ -24,3 +24,4 @@ results/
 bigData/
 data/
 src/__pycache__/
+src/dataset/__pycache__/
