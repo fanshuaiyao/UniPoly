@@ -6,7 +6,8 @@ import sklearn.metrics as metrics
 from sklearn.metrics import r2_score
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader
-from src.dataset.dataloader import custom_collate
+from torch.utils.data import DataLoader
+from src.dataset.dataloader import make_custom_collate
 
 
 def scale_targets(dataset, task):
@@ -45,7 +46,7 @@ def scale_targets(dataset, task):
 
     return scaler
 
-def get_data_loader(dataset, indices=None, batch_size=32, shuffle=False):
+def get_data_loader(dataset, indices=None, batch_size=32, shuffle=False, modalities=None):
     """
     创建PyTorch数据加载器（DataLoader）
     
@@ -69,10 +70,11 @@ def get_data_loader(dataset, indices=None, batch_size=32, shuffle=False):
     subset_dataset = [dataset[i] for i in indices]
     
     # 创建DataLoader，使用自定义的collate_fn处理多模态数据
+    collate_fn = make_custom_collate(modalities) if modalities is not None else custom_collate
     loader = DataLoader(
         subset_dataset, 
         batch_size=batch_size,
-        collate_fn=custom_collate,  # 自定义批量化函数，处理图数据等复杂结构
+        collate_fn=collate_fn,  # 自定义批量化函数，处理图数据等复杂结构
         shuffle=shuffle
     )
     

@@ -134,7 +134,7 @@ def main():
         text_model_name=args.text_model_name
     )
     indices = np.arange(len(dataset))
-    dataloader = get_data_loader(dataset, indices=indices, batch_size=args.batch_size, shuffle=False)
+    dataloader = get_data_loader(dataset, indices=indices, batch_size=args.batch_size, shuffle=False, modalities=args.modalities)
 
     # Initialize model
     model = UniEncoderAttention(

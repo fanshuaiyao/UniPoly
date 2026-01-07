@@ -222,7 +222,8 @@ def main():
             dataset, 
             indices=train_indices, 
             batch_size=args.batch_size, 
-            shuffle=True  # 训练集需要打乱
+            shuffle=True,  # 训练集需要打乱
+            modalities=model_modality_list
         )
         val_loader = get_data_loader(
             dataset, 
@@ -234,7 +235,8 @@ def main():
             dataset, 
             indices=test_indices, 
             batch_size=args.batch_size, 
-            shuffle=False  # 测试集不需要打乱
+            shuffle=False,  # 测试集不需要打乱
+            modalities=model_modality_list
         )
 
         # 初始化模型：创建多模态融合模型
