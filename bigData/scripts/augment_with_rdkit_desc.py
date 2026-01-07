@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rdkit_col", default="rdkit_description", help="New RDKit description column name.")
     parser.add_argument("--merged_col", default="merged_description", help="New merged description column name.")
     parser.add_argument("--chunksize", type=int, default=50000, help="Chunk size for pandas.read_csv.")
-    parser.add_argument("--separator", default="\n", help="Separator between descriptions.")
+    parser.add_argument("--separator", default="", help="Separator between descriptions.")
     return parser.parse_args()
 
 

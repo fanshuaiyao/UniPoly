@@ -121,7 +121,6 @@ class EncoderModule(nn.Module):
         elif modality == 'text':
             encoder = AutoModelForSeq2SeqLM.from_pretrained(text_model_name).encoder
             input_dim = encoder.config.hidden_size
-            print("使用了文本编码器")
         elif modality == 'geom':
             encoder = SchNetEncoder(
                 load_from_pretrain=geom_model_name,

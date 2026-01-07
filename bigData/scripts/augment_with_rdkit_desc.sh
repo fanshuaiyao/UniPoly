@@ -10,7 +10,7 @@ cd "$ROOT"
 export PYTHONPATH="$ROOT"
 
 INPUT="$WORK/clean/cleaned.csv"
-OUTPUT="$WORK/clean/res_desc.csv"
+OUTPUT="$WORK/clean/res_desc_final.csv"
 LOG="$LOGDIR/augment_rdkit_desc.log"
 
 if [ ! -f "$INPUT" ]; then
