@@ -13,9 +13,12 @@ import rdkit.Chem as Chem
 from rdkit.Chem import AllChem
 import numpy as np
 from torch_geometric.data import Data
+from rdkit import RDLogger
+RDLogger.DisableLog("rdApp.*")
+
 
 class UniDataset(Dataset):
-    def __init__(self, root, dataset, smiles_model_name, text_model_name, transform=None, pre_transform=None):
+    def __init__(self, root, dataset, smiles_model_name, text_model_name, task_type="pretrain", transform=None, pre_transform=None):
         # 基础配置
         self.dataset = dataset
         self.root = root
@@ -28,6 +31,7 @@ class UniDataset(Dataset):
         # 初始化分词器
         self.smiles_tokenizer = AutoTokenizer.from_pretrained(smiles_model_name)
         self.text_tokenizer = AutoTokenizer.from_pretrained(text_model_name)
+        self.task_type = task_type
         
         # 处理后数据的缓存路径
         processed_dir = os.path.join(self.root, 'processed')
@@ -37,7 +41,7 @@ class UniDataset(Dataset):
         if os.path.exists(self.processed_file):
             # 存在缓存则直接加载
             self.data_list = torch.load(self.processed_file)
-            print(f"loaded {self.processed_file} with {len(self.data_list)} samples")  # Loaded the processed dataset from ...
+            print(f"数据从缓存加载：loaded {self.processed_file} with {len(self.data_list)} samples")  # Loaded the processed dataset from ...
             
         else:
             # 否则重新处理并保存
@@ -45,7 +49,7 @@ class UniDataset(Dataset):
             csv_path = f"{self.root}/raw/{self.dataset}.csv"
             self.max_length_smiles, self.max_length_text = self.get_max_token_length(csv_path, self.smiles_tokenizer, self.text_tokenizer,self.text_dict)
             
-            self.process()
+            self.new_process()
             torch.save(self.data_list, self.processed_file)
             print(f"processed and saved {self.processed_file} with {len(self.data_list)} samples")  # Processed and saved the dataset to ...
 
@@ -64,7 +68,7 @@ class UniDataset(Dataset):
         
         for _, row in tqdm(df.iterrows(), total=len(df), desc="Checking token lengths"):
             # 假设 SMILES 在第一列
-            smiles = row[0]
+            smiles = row[1]
             
             # SMILES 分词
             smiles_tokens = self.smiles_tokenizer.encode(smiles)
@@ -81,7 +85,7 @@ class UniDataset(Dataset):
         return max_smiles_length, max_text_length
 
 
-    def process(self):
+    def old_process(self):
         # 将 CSV 转成 PyG Data 列表
         csv_path = f"{self.root}/raw/{self.dataset}.csv"
         df = pd.read_csv(csv_path)
@@ -89,8 +93,8 @@ class UniDataset(Dataset):
         mfpgen = rdFingerprintGenerator.GetMorganGenerator(radius=2,fpSize=1024)
         for i, row in tqdm(df.iterrows(), total=len(df), desc="Processing dataset"):
             # 假设：第 1 列是 SMILES，第 2 列是标签
-            smiles = row[0]
-            property = row[1]
+            smiles = row["smiles"]
+            property = row["property"]
             mol = Chem.MolFromSmiles(smiles)
             if mol is None:
                 continue
@@ -142,4 +146,112 @@ class UniDataset(Dataset):
             self.data_list.append(data)
 
         # 输出处理样本数
+        print("Dataset processed. Total samples:", len(self.data_list))
+
+
+    def new_process(self):
+        csv_path = f"{self.root}/raw/{self.dataset}.csv"
+        df = pd.read_csv(csv_path)
+
+        # === 1) 自动选择 smiles 列
+        smiles_col = "smiles"
+        if smiles_col not in df.columns:
+            raise ValueError(f"CSV 中找不到 SMILES 列：canonical_smiles / smiles 均不存在。现有列：{list(df.columns)}")
+
+        # === 2) 下游任务才需要 label；预训练不需要 ===
+        # 如果你还没在 __init__ 里加 task_type / label_col，这里也能跑：
+        task_type = getattr(self, "task_type", "pretrain")  # 默认预训练
+        label_col = getattr(self, "label_col", None)        # 默认 None
+
+        if task_type == "downstream":
+            if not label_col:
+                # 兼容你现在的写法：默认用 property
+                label_col = "property"
+            if label_col not in df.columns:
+                raise ValueError(f"downstream 模式需要 label_col={label_col}，但 CSV 没有该列。现有列：{list(df.columns)}")
+
+        # === 3) Morgan 指纹生成器 ===
+        mfpgen = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=1024)
+
+        self.data_list = []
+        for i, row in tqdm(df.iterrows(), total=len(df), desc="Processing dataset"):
+
+            # --- 3.1 读 smiles，并强制转换成干净字符串 ---
+            smi_raw = row[smiles_col]
+            if pd.isna(smi_raw):
+                continue
+            smiles = str(smi_raw).strip()
+            if not smiles:
+                continue
+
+            # --- 3.2 解析 mol（这里就能过滤掉非法 smiles） ---
+            mol = Chem.MolFromSmiles(smiles)
+            if mol is None:
+                continue
+
+            # 通配符原子替换为氢
+            for atom in mol.GetAtoms():
+                if atom.GetAtomicNum() == 0:
+                    atom.SetAtomicNum(1)
+
+            # --- 3.3 构图 ---
+            data = mol_to_graph_data_obj_simple(mol)
+
+            # --- 3.4 标签：只有 downstream 才设置 data.y ---
+            if task_type == "downstream":
+                y_raw = row[label_col]
+                if pd.isna(y_raw):
+                    continue
+                try:
+                    y = float(y_raw)
+                except Exception:
+                    continue
+                data.y = torch.tensor([y], dtype=torch.float)
+
+            # --- 3.5 保存 smiles
+            data.smiles = smiles
+
+            # --- 3.6 SMILES tokenizer
+            tok_smi = self.smiles_tokenizer(
+                smiles,
+                return_tensors="pt",
+                max_length=min(self.max_length_smiles + 5, 512),  # 你如果要固定512，可以直接写512
+                padding="max_length",
+                truncation=True,
+            )
+            data.input_ids_smiles = tok_smi.input_ids
+            data.attention_mask_smiles = tok_smi.attention_mask
+
+            # --- 3.7 文本描述
+            text = ""
+            if isinstance(self.text_dict, dict):
+                text = self.text_dict.get(smiles, "")
+            data.text = text
+
+            tok_txt = self.text_tokenizer(
+                text,
+                return_tensors="pt",
+                max_length=min(self.max_length_text + 5, 512),  # 同理可固定512
+                padding="max_length",
+                truncation=True,
+            )
+            data.input_ids_text = tok_txt.input_ids
+            data.attention_mask_text = tok_txt.attention_mask
+
+            # --- 3.8 指纹 ---
+            fp = mfpgen.GetFingerprint(mol)
+            data.fp = torch.tensor(fp, dtype=torch.float).unsqueeze(0)
+
+            # --- 3D：只有 geom 模态才算 ---
+            use_geom = "geom" in getattr(self, "modalities", [])
+            if use_geom:
+                try:
+                    mol3d = Chem.MolFromSmiles(smiles)
+                    mol3d = Chem.AddHs(mol3d)     # 可选，但推荐
+                    data.pos, data.z = mol2coords(mol3d)
+                except Exception:
+                    continue   # geom 失败 → 跳样本（合理）
+
+            self.data_list.append(data)
+
         print("Dataset processed. Total samples:", len(self.data_list))
