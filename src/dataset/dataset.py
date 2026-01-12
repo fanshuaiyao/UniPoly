@@ -25,7 +25,7 @@ class UniDataset(Dataset):
         self.transform = transform
         self.pre_transform = pre_transform
         # 载入 SMILES -> 文本描述映射
-        self.text_dict = json.load(open('./data/smiles_all_dict.json', 'r'))
+        self.text_dict = json.load(open('./data/smiles_test_dict.json', 'r'))
         # 处理后的 Data 列表
         self.data_list = []
         # 初始化分词器
@@ -68,7 +68,7 @@ class UniDataset(Dataset):
         
         for _, row in tqdm(df.iterrows(), total=len(df), desc="Checking token lengths"):
             # 假设 SMILES 在第一列
-            smiles = row[1]
+            smiles = row["smiles"]
             
             # SMILES 分词
             smiles_tokens = self.smiles_tokenizer.encode(smiles)

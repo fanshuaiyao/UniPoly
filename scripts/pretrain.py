@@ -9,6 +9,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import json
+import torch.nn.functional as F
+
 
 from src.dataset import UniDataset
 from src.modules import UniEncoderAttention
@@ -134,7 +136,7 @@ def main():
         text_model_name=args.text_model_name
     )
     indices = np.arange(len(dataset))
-    dataloader = get_data_loader(dataset, indices=indices, batch_size=args.batch_size, shuffle=False, modalities=args.modalities)
+    dataloader = get_data_loader(dataset, indices=indices, batch_size=args.batch_size, shuffle=True, modalities=args.modalities)
 
     # Initialize model
     model = UniEncoderAttention(
@@ -160,42 +162,135 @@ def main():
     
     # Record loss for each epoch
     losses = []
-    
     model.train()
     for epoch in range(args.epochs):
         epoch_loss = 0.0
+
+        # ===== 统计 epoch 平均指标 =====
+        pos_sum = 0.0
+        neg_sum = 0.0
+        stat_steps = 0
+
         for step, data in enumerate(dataloader):
             data = data.to(device)
-            if args.debug_batch and epoch == 0 and step == 0:
-                fields = [
-                    "x",
-                    "edge_index",
-                    "edge_attr",
-                    "batch",
-                    "input_ids_smiles",
-                    "attention_mask_smiles",
-                    "input_ids_text",
-                    "attention_mask_text",
-                    "fp",
-                    "x3d",
-                    "pos3d",
-                    "batch3d",
-                    "smiles",
-                    "text",
-                ]
-                print("First batch (brief):")
-                for field in fields:
-                    print(f"  {field}: {_brief(getattr(data, field, None))}")
+
             optimizer.zero_grad()
-            _, embeddings = model(data)  # embeddings: [batch_size, num_modalities, embedding_dim]
-            loss = compute_contrastive_loss(embeddings, temperature=args.temperature)
+            _, embeddings = model(data)   # [B, M, D]
+
+            loss = compute_contrastive_loss(
+                embeddings,
+                temperature=args.temperature
+            )
             loss.backward()
             optimizer.step()
-            epoch_loss += loss.item()
-        avg_loss = epoch_loss / len(dataloader)
-        losses.append(avg_loss)
-        print(f"Epoch [{epoch+1}/{args.epochs}] Contrastive Loss: {avg_loss:.4f}")
 
+            epoch_loss += loss.item()
+
+            # ===== 指标计算（不参与反向传播）=====
+            with torch.no_grad():
+                emb = embeddings.detach()      # [B, M, D]
+                B, M, D = emb.shape
+
+                # L2 normalize
+                z = F.normalize(emb, dim=-1)   # [B, M, D]
+
+                # -------- 正样本相似度 --------
+                # 同一个样本，不同模态，两两 cosine
+                pos_sims = []
+                for i in range(M):
+                    for j in range(i + 1, M):
+                        sim = (z[:, i, :] * z[:, j, :]).sum(dim=-1)  # [B]
+                        pos_sims.append(sim.mean())
+                pos_sim = torch.stack(pos_sims).mean().item()
+
+                # -------- 负样本相似度 --------
+                # 用第一个模态（如 smiles）作 anchor
+                perm = torch.randperm(B, device=emb.device)
+                neg_sim = (z[:, 0, :] * z[perm, 0, :]).sum(dim=-1).mean().item()
+
+            pos_sum += pos_sim
+            neg_sum += neg_sim
+            stat_steps += 1
+
+        # ===== epoch 统计 =====
+        avg_loss = epoch_loss / stat_steps
+        avg_pos = pos_sum / stat_steps
+        avg_neg = neg_sum / stat_steps
+
+        losses.append(avg_loss)
+
+        print(
+            f"Epoch [{epoch+1}/{args.epochs}] "
+            f"Loss={avg_loss:.4f} | "
+            f"pos_sim={avg_pos:.4f} | "
+            f"neg_sim={avg_neg:.4f}"
+        )
+
+    ##### 先注释，方便回滚####
+    # model.train()
+    # for epoch in range(args.epochs):
+    #     epoch_loss = 0.0
+    #     for step, data in enumerate(dataloader):
+    #         data = data.to(device)
+    #         if args.debug_batch and epoch == 0 and step == 0:
+    #             fields = [
+    #                 "x",
+    #                 "edge_index",
+    #                 "edge_attr",
+    #                 "batch",
+    #                 "input_ids_smiles",
+    #                 "attention_mask_smiles",
+    #                 "input_ids_text",
+    #                 "attention_mask_text",
+    #                 "fp",
+    #                 "x3d",
+    #                 "pos3d",
+    #                 "batch3d",
+    #                 "smiles",
+    #                 "text",
+    #             ]
+    #             print("First batch (brief):")
+    #             for field in fields:
+    #                 print(f"  {field}: {_brief(getattr(data, field, None))}")
+    #         optimizer.zero_grad()
+    #         _, embeddings = model(data)  # embeddings: [batch_size, num_modalities, embedding_dim]
+    #         loss = compute_contrastive_loss(embeddings, temperature=args.temperature)
+    #         loss.backward()
+    #         optimizer.step()
+    #         epoch_loss += loss.item()
+    #     avg_loss = epoch_loss / len(dataloader)
+    #     losses.append(avg_loss)
+    #     print(f"Epoch [{epoch+1}/{args.epochs}] Contrastive Loss: {avg_loss:.4f}")
+    #     ### 指标 ###
+
+    #     with torch.no_grad():
+    #         # embeddings: [B, M, D]
+    #         B, M, D = embeddings.shape
+
+    #         # L2 normalize
+    #         z = F.normalize(embeddings, dim=-1)  # [B, M, D]
+
+    #         # ---------- 正样本相似度 ----------
+    #         # 同一个样本，不同模态两两 cosine
+    #         # 取 (i,j), i<j
+    #         pos_sims = []
+    #         for i in range(M):
+    #             for j in range(i + 1, M):
+    #                 sim = (z[:, i, :] * z[:, j, :]).sum(dim=-1)  # [B]
+    #                 pos_sims.append(sim.mean())
+    #         pos_sim = torch.stack(pos_sims).mean().item()
+
+    #         # ---------- 负样本相似度 ----------
+    #         # 用第一个模态作为 anchor（例如 smiles）
+    #         anchor = z[:, 0, :]              # [B, D]
+    #         perm = torch.randperm(B)
+    #         neg = z[perm, 0, :]              # 打乱样本
+    #         neg_sim = (anchor * neg).sum(dim=-1).mean().item()
+
+    #     print(f"Epoch [{epoch+1}] pos_sim={pos_sim:.4f}  neg_sim={neg_sim:.4f}")
+
+    #     ############
+   
     # Save original loss data
     loss_data = {
         'epochs': list(range(1, args.epochs + 1)),

@@ -75,7 +75,8 @@ def get_data_loader(dataset, indices=None, batch_size=32, shuffle=False, modalit
         subset_dataset, 
         batch_size=batch_size,
         collate_fn=collate_fn,  # 自定义批量化函数，处理图数据等复杂结构
-        shuffle=shuffle
+        shuffle=shuffle,
+        drop_last=True
     )
     
     print(f"Created dataloader with {len(subset_dataset)} samples")

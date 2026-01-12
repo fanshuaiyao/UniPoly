@@ -155,14 +155,53 @@ class EncoderModule(nn.Module):
             nn.BatchNorm1d(joint_embedding_dim),
             nn.ReLU()
         )
-
+    
     def _encode_text_like(self, data, input_ids_attr: str, attention_mask_attr: str):
         device = next(self.encoder.parameters()).device
         input_ids = getattr(data, input_ids_attr).to(device)
         attention_mask = getattr(data, attention_mask_attr).to(device)
 
+        # ---- HARD TRUNCATE BEGIN ----
+        # 1) squeeze: [B,1,L] -> [B,L]
+        if input_ids.dim() == 3 and input_ids.size(1) == 1:
+            input_ids = input_ids.squeeze(1)
+            attention_mask = attention_mask.squeeze(1)
+
+        # 2) dtype
+        input_ids = input_ids.long()
+        attention_mask = attention_mask.long()
+
+        # 3) compute safe max length
+        max_pos = getattr(self.encoder.config, "max_position_embeddings", 512)
+        pad_id  = getattr(self.encoder.config, "pad_token_id", 0)
+
+        # Roberta 的 position_id 通常会有 pad_id 偏移：position_ids = pad_id + cumsum(mask)
+        # 为了不越界，需要保证 pad_id + seq_len <= max_pos - 1
+        safe_max_len = max_pos - pad_id - 1
+        if not hasattr(self, "_printed_safe_len"):
+            print(f"[{input_ids_attr}] max_pos={max_pos}, pad_id={pad_id}, safe_max_len={safe_max_len}")
+            self._printed_safe_len = True
+
+        if safe_max_len <= 0:
+            safe_max_len = max_pos  # 兜底，理论不该发生
+
+        # 4) truncate
+        if input_ids.size(-1) > safe_max_len:
+            input_ids = input_ids[..., :safe_max_len]
+            attention_mask = attention_mask[..., :safe_max_len]
+        # ---- HARD TRUNCATE END ----
+
         features = self.encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
         return self.projection(self.norm(features[:, 0, :]))
+
+
+    # def _encode_text_like(self, data, input_ids_attr: str, attention_mask_attr: str):
+    #     device = next(self.encoder.parameters()).device
+    #     input_ids = getattr(data, input_ids_attr).to(device)
+    #     attention_mask = getattr(data, attention_mask_attr).to(device)
+
+    #     features = self.encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
+    #     return self.projection(self.norm(features[:, 0, :]))
 
 
     def forward(self, data):
