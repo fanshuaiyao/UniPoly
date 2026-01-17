@@ -1,17 +1,4 @@
-"""
-Uni-Poly 模型训练脚本
 
-功能说明:
-- 训练多模态聚合物性质预测模型（UniEncoderAttention）
-- 支持多个任务（tg, er, de, td, tm, iv, bc）的训练
-- 支持多种模态（smiles, text, graph, fp, geom）的组合
-- 自动进行数据划分、模型训练、评估和结果保存
-
-使用方法:
-    python scripts/train.py --tasks tg er --modalities smiles text graph --epochs 100
-    或
-    bash scripts/run_train.sh
-"""
 
 import os
 # 这里的端口必须和你本地转发到服务器的端口一致
@@ -66,7 +53,7 @@ def parse_arguments():
     parser.add_argument(
         '--modalities',
         nargs='+',
-        default=['smiles', 'text', 'graph', 'fp', 'geom'],
+        default=['smiles', 'fp', 'text', 'graph'],
         help="List of model modalities. Example: --modalities smiles text"
     )
     
@@ -158,7 +145,7 @@ def main():
     pre_trained_model_dict = {
         'smiles_model_name': "./pretrained_models/smiles450k",  # SMILES编码器：RoBERTa
         'text_model_name': "./pretrained_models/T5",  # 文本编码器：T5
-        'gnn_model_name': "./pretrained_models/Mole-BERT.pth",  # 图编码器：GIN (Mole-BERT)
+        'gnn_model_name': "./pretrained_models/Mole-BERT.pth"  # 图编码器：GIN (Mole-BERT)
         'geom_model_name': "./pretrained_models/schnet_qm9_heat_capacity_model.pth"  # 几何编码器：SchNet
     }
     
@@ -178,7 +165,8 @@ def main():
             root='./data',  # 数据根目录
             dataset=dataset_name,  # 数据集名称（如 'smi_tg'）
             smiles_model_name=pre_trained_model_dict['smiles_model_name'],
-            text_model_name=pre_trained_model_dict['text_model_name']
+            text_model_name=pre_trained_model_dict['text_model_name'],
+            task_type == "downstream"
         )
         for dataset_name in dataset_name_list
     ]
@@ -229,7 +217,9 @@ def main():
             dataset, 
             indices=val_indices, 
             batch_size=args.batch_size, 
-            shuffle=False  # 验证集不需要打乱
+            shuffle=False,  # 验证集不需要打乱
+            modalities=model_modality_list
+
         )
         test_loader = get_data_loader(
             dataset, 
@@ -252,8 +242,13 @@ def main():
         
         # 如果提供了预训练模型路径，加载预训练权重
         if pretrained_model_path:
-            model.load_state_dict(torch.load(pretrained_model_path))
+            state = torch.load(pretrained_model_path, map_location="cpu")
+            missing, unexpected = model.load_state_dict(state, strict=False)
             print(f"Loaded pretrained model from {pretrained_model_path}")
+            print(f"Missing keys: {len(missing)}")
+            print(f"Unexpected keys: {len(unexpected)}")
+            # model.load_state_dict(torch.load(pretrained_model_path))
+            # print(f"Loaded pretrained model from {pretrained_model_path}")
         
         # 将模型移动到指定设备（GPU/CPU）
         model.to(device)
@@ -298,12 +293,19 @@ def main():
 
         # 保存结果到CSV文件：追加模式，如果文件不存在则创建并写入表头
         os.makedirs(os.path.dirname(result_output_dir), exist_ok=True)  # 创建结果目录
-        results_df = pd.DataFrame(results)
-        results_df.to_csv(
+        # results_df = pd.DataFrame(results)
+        # results_df.to_csv(
+        #     result_output_dir,
+        #     mode='a',  # 追加模式
+        #     header=not os.path.exists(result_output_dir),  # 如果文件不存在则写入表头
+        #     index=False  # 不保存行索引
+        # )
+
+        pd.DataFrame([result]).to_csv(
             result_output_dir,
-            mode='a',  # 追加模式
-            header=not os.path.exists(result_output_dir),  # 如果文件不存在则写入表头
-            index=False  # 不保存行索引
+            mode='a',
+            header=not os.path.exists(result_output_dir),
+            index=False
         )
         print(f"Results have been appended to '{result_output_dir}'.")
         

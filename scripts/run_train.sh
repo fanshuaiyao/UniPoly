@@ -34,17 +34,11 @@ export CUDA_VISIBLE_DEVICES=1
 # 2>&1: 将标准错误也重定向到同一个日志文件（2是标准错误，1是标准输出）
 # &: 在后台运行
 nohup python scripts/train.py \
-    --modalities smiles fp \
-    --tasks down \
+    --modalities smiles fp text graph \
+    --tasks lipo \
     --pretrained_model_path ./pretrained_models/saved_pretrained_model.pth \
-    --batch_size 2 \
-    --epochs 10 \
+    --batch_size 16 \
+    --epochs 100 \
     --patience 5 \
     --freeze_encoder
     > ./logs/train.log 2>&1 &
-
-# 脚本执行后会立即返回，训练在后台进行
-# 可以通过以下命令查看训练日志：
-#   tail -f ./logs/train.log
-# 或查看实时输出：
-#   watch -n 1 tail -n 20 ./logs/train.log
