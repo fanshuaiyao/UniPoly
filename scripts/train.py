@@ -133,6 +133,7 @@ def main():
     """
     # 解析命令行参数
     args = parse_arguments()
+    print("命令行参数解析完成")
     
     # 设置计算设备：优先使用GPU，如果没有则使用CPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -145,7 +146,7 @@ def main():
     pre_trained_model_dict = {
         'smiles_model_name': "./pretrained_models/smiles450k",  # SMILES编码器：RoBERTa
         'text_model_name': "./pretrained_models/T5",  # 文本编码器：T5
-        'gnn_model_name': "./pretrained_models/Mole-BERT.pth"  # 图编码器：GIN (Mole-BERT)
+        'gnn_model_name': "./pretrained_models/Mole-BERT.pth",  # 图编码器：GIN (Mole-BERT)
         'geom_model_name': "./pretrained_models/schnet_qm9_heat_capacity_model.pth"  # 几何编码器：SchNet
     }
     
@@ -166,7 +167,7 @@ def main():
             dataset=dataset_name,  # 数据集名称（如 'smi_tg'）
             smiles_model_name=pre_trained_model_dict['smiles_model_name'],
             text_model_name=pre_trained_model_dict['text_model_name'],
-            task_type == "downstream"
+            task_type="downstream"
         )
         for dataset_name in dataset_name_list
     ]
