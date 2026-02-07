@@ -38,12 +38,12 @@ stats_text = (f"mean = {mean_val:.2f}\n"
               f"min = {min_val:.2f}\n"
               f"max = {max_val:.2f}")
 
-props = dict(boxstyle='round', facecolor='white', alpha=0.9, edgecolor='gray')
+props = dict(boxstyle='round', facecolor='white', alpha=0.9, edgecolor='black', linewidth=2)
 ax.text(0.05, 0.95, stats_text, transform=ax.transAxes, fontsize=11,
         verticalalignment='top', horizontalalignment='left', bbox=props)
 
 # 6. 设置标签 (适配 ESOL)
-ax.set_xlabel('Measured Log Solubility (log(mol/L))', fontsize=12, labelpad=10)
+ax.set_xlabel('Value (log(mol/L))', fontsize=12, labelpad=10)
 ax.set_ylabel('Density', fontsize=12, labelpad=10)
 ax.set_title('ESOL Dataset Distribution', fontsize=14, pad=15)
 

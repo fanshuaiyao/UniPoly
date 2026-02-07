@@ -36,7 +36,7 @@ stats_text = (f"mean = {mean_val:.2f}\n"
               f"min = {min_val:.2f}\n"
               f"max = {max_val:.2f}")
 
-props = dict(boxstyle='round', facecolor='white', alpha=0.9, edgecolor='gray')
+props = dict(boxstyle='round', facecolor='white', alpha=0.9, edgecolor='black', linewidth=2)
 
 # 左上角对齐
 ax.text(0.05, 0.95, stats_text, transform=ax.transAxes, fontsize=11,
@@ -44,7 +44,7 @@ ax.text(0.05, 0.95, stats_text, transform=ax.transAxes, fontsize=11,
 
 # 6. 设置标签和标题 (适配 FreeSolv)
 # 单位是 kcal/mol
-ax.set_xlabel('Hydration Free Energy (kcal/mol)', fontsize=12, labelpad=10)
+ax.set_xlabel('Value (kcal/mol)', fontsize=12, labelpad=10)
 ax.set_ylabel('Density', fontsize=12, labelpad=10)
 ax.set_title('FreeSolv Dataset Distribution', fontsize=14, pad=15)
 
