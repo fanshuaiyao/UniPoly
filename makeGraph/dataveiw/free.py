@@ -28,7 +28,7 @@ fig, ax = plt.subplots(figsize=(6, 5), dpi=150)
 # 4. 绘制直方图和密度曲线
 # 这里的颜色我换成了深绿色 '#55A868'，用来区分 Lipophilicity (蓝色)
 sns.histplot(data=data, stat='density', kde=True, 
-             color='#55A868', edgecolor='black', alpha=0.7, ax=ax)
+             color='#00451B', edgecolor='black', alpha=0.7, ax=ax)
 
 # 5. 添加统计信息框 (保持在左上角)
 stats_text = (f"mean = {mean_val:.2f}\n"

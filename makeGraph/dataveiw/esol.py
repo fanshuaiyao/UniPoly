@@ -30,7 +30,7 @@ fig, ax = plt.subplots(figsize=(6, 5), dpi=150)
 
 # 4. 绘制 (颜色：学术红 #C44E52)
 sns.histplot(data=data, stat='density', kde=True, 
-             color='#C44E52', edgecolor='black', alpha=0.7, ax=ax)
+             color='#6D011F', edgecolor='black', alpha=0.7, ax=ax)
 
 # 5. 添加统计信息框 (左上角)
 stats_text = (f"mean = {mean_val:.2f}\n"

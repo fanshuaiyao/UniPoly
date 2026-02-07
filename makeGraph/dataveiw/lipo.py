@@ -27,8 +27,10 @@ fig, ax = plt.subplots(figsize=(6, 5), dpi=150) # 屏幕显示用 150 dpi
 
 # 4. 绘制直方图和密度曲线 (KDE)
 # color='#4c72b0' 是经典的学术深蓝色
+# sns.histplot(data=data, stat='density', kde=True, 
+#              color='#105CA4', edgecolor='black', alpha=0.7, ax=ax)
 sns.histplot(data=data, stat='density', kde=True, 
-             color='#4c72b0', edgecolor='black', alpha=0.7, ax=ax)
+             color='#08336E', edgecolor='black', alpha=0.7, ax=ax)
 
 # 5. 添加统计信息框
 stats_text = (f"mean = {mean_val:.2f}\n"
