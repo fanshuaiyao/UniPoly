@@ -12,4 +12,4 @@ nohup python -u scripts/train.py \
   --epochs 100 \
   --patience 5 \
   --freeze_encoder \
-  > ./logs/train.log 2>&1 &
+  > ./logs/train_test.log 2>&1 &

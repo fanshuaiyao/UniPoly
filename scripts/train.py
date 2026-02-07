@@ -294,20 +294,20 @@ def main():
 
         # 保存结果到CSV文件：追加模式，如果文件不存在则创建并写入表头
         os.makedirs(os.path.dirname(result_output_dir), exist_ok=True)  # 创建结果目录
-        # results_df = pd.DataFrame(results)
-        # results_df.to_csv(
-        #     result_output_dir,
-        #     mode='a',  # 追加模式
-        #     header=not os.path.exists(result_output_dir),  # 如果文件不存在则写入表头
-        #     index=False  # 不保存行索引
-        # )
-
-        pd.DataFrame([result]).to_csv(
+        results_df = pd.DataFrame(results)
+        results_df.to_csv(
             result_output_dir,
-            mode='a',
-            header=not os.path.exists(result_output_dir),
-            index=False
+            mode='a',  # 追加模式
+            header=not os.path.exists(result_output_dir),  # 如果文件不存在则写入表头
+            index=False  # 不保存行索引
         )
+
+        # pd.DataFrame([result]).to_csv(
+        #     result_output_dir,
+        #     mode='a',
+        #     header=not os.path.exists(result_output_dir),
+        #     index=False
+        # )
         print(f"Results have been appended to '{result_output_dir}'.")
         
 
