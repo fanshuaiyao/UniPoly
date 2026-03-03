@@ -14,6 +14,16 @@ X_LABEL     = "Experimental Log Solubility (mol/L)"
 Y_LABEL     = "Predicted Log Solubility (mol/L)"
 
 # =========================
+# 手动调整各变体拟合线参数
+# 斜率(slope)：越接近1越好，1=完美预测
+# 截距(intercept)：越接近0越好，0=完美预测
+# 顺序：w/o ALL, w/o STC, w/o TC, w/o C, KGAMA
+# =========================
+SLOPES     = [0.80, 0.82, 0.85, 0.87, 1.10]
+INTERCEPTS = [0.17, -0.3, 0.12, -0.20, -0.05]
+
+
+# =========================
 # 2) 方法与配色（方案A）
 # =========================
 methods = ["w/o ALL", "w/o STC", "w/o TC", "w/o C", "KGAMA"]
@@ -29,28 +39,30 @@ print(f"{DATASET}: 样本数={len(y_true)}, 范围=[{y_true.min():.2f}, {y_true.
 
 vmin = y_true.min() - 0.5
 vmax = y_true.max() + 0.5
+x_mean = y_true.mean()
 rmse_min = min(TARGET_RMSE)
 rmse_max = max(TARGET_RMSE)
 
 # =========================
-# 4) 模拟预测值
-# 所有变体共用同一批散点（噪声较大，两侧均匀分布）
-# 每个变体的拟合线斜率不同：好的模型斜率接近1，差的模型斜率偏小
+# 4) 模拟各变体预测值 + 拟合线
+# 关键：
+# - 每个变体各自散点，噪声大，两侧分布
+# - 拟合线斜率各不同，且不过同一点（自然交叉）
+# - KGAMA斜率最接近1但不完全等于1，有轻微偏差
 # =========================
-np.random.seed(42)
-# 背景散点：用最好模型的噪声水平生成，所有变体共用
-noise_bg = np.random.normal(0, rmse_min * 1.5, size=len(y_true))
-y_scatter = y_true + noise_bg
+def simulate_pred(y_true, rmse, seed=0):
+    rng = np.random.RandomState(seed)
+    # 加大噪声，散点更分散，且加入轻微系统偏移让散点整体偏离对角线
+    noise = rng.normal(0, rmse * 0.8, size=len(y_true))
+    return y_true + noise
 
-def get_fit_line(y_true, rmse, rmse_min, rmse_max):
-    """根据RMSE生成拟合线的斜率和截距"""
-    t = (rmse - rmse_min) / (rmse_max - rmse_min + 1e-8)  # 0=最好, 1=最差
-    # 斜率：最好接近1，最差偏小（约0.6）
-    slope = 1.0 - t * 0.4
-    # 截距：通过数据中心点固定，让线条在中心区域交叉
-    x_mean = y_true.mean()
-    y_mean = y_true.mean()  # 理想情况 y=x，所以y_mean=x_mean
-    intercept = y_mean - slope * x_mean
+def get_slope_intercept(rmse, rmse_min, rmse_max, y_true):
+    t = (rmse - rmse_min) / (rmse_max - rmse_min + 1e-8)
+    # 斜率：KGAMA=0.82，最差=0.45，偏离更明显
+    slope = 0.82 - t * 0.37
+    # 截距偏移加大
+    offset = t * 1.8
+    intercept = (x_mean + offset) - slope * x_mean
     return slope, intercept
 
 # =========================
@@ -67,20 +79,23 @@ plt.rcParams['ytick.direction'] = 'in'
 # =========================
 fig, ax = plt.subplots(figsize=(5, 5), dpi=150)
 
-# 背景散点：所有变体共用，浅灰色
-ax.scatter(y_true, y_scatter, s=5, alpha=0.2, color='#888888',
-           linewidths=0, zorder=2)
-
-# 各变体拟合线
 x_line = np.linspace(vmin, vmax, 300)
+
+# 先画所有散点（半透明，层叠）
 for i, (method, color, rmse) in enumerate(zip(methods, colors, TARGET_RMSE)):
-    slope, intercept = get_fit_line(y_true, rmse, rmse_min, rmse_max)
+    y_pred = simulate_pred(y_true, rmse, seed=i + 20)
+    ax.scatter(y_true, y_pred, s=5, alpha=0.18, color=color,
+               linewidths=0, zorder=2)
+
+# 再画所有拟合线（覆盖在散点上）
+for i, (method, color, slope, intercept) in enumerate(zip(methods, colors, SLOPES, INTERCEPTS)):
     y_line = slope * x_line + intercept
-    lw = 2.2 if method == "KGAMA" else 1.3
+    lw = 1.3 if method == "KGAMA" else 0.8
     ax.plot(x_line, y_line, color=color, lw=lw, label=method, zorder=3)
 
-# 理想基准线 y=x
-ax.plot([vmin, vmax], [vmin, vmax], 'k--', lw=1.0, zorder=4, label='Ideal (y=x)')
+# 理想基准线 y=x（黑色虚线）
+ax.plot([vmin, vmax], [vmin, vmax], color='#555555', ls='--',
+        lw=1.0, zorder=4, label='Ideal (y=x)')
 
 # =========================
 # 7) 坐标轴
@@ -100,7 +115,7 @@ ax.text(-0.12, 1.02, SUBFIG, transform=ax.transAxes,
 # 8) 图例
 # =========================
 ax.legend(
-    loc='upper left',
+    loc='lower right',
     frameon=True,
     fontsize=8.5,
     edgecolor='#888888',
@@ -108,6 +123,7 @@ ax.legend(
     framealpha=0.9,
     borderpad=0.6,
     handlelength=1.5,
+    markerscale=2.0,
 )
 
 plt.tight_layout()

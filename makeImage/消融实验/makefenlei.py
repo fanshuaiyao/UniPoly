@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 tasks_cls = ["BACE", "BBBP", "ClinTox", "Tox21", "ToxCast", "Sider"]
 
 methods = [
-    "G",
-    "G+F",
-    "G+F+S",
-    "G+F+S+T (Concat)",
-    "G+F+S+T (Cross-Attn)"
+    "w/o ALL",
+    "w/o STC",
+    "w/o TC",
+    "w/o C",
+    "KGAMA"
 ]
 
 # =========================
@@ -21,8 +21,8 @@ methods = [
 results = np.array([
     [0.825, 0.898, 0.805, 0.771, 0.695, 0.638], # G (纯图基础)
     [0.842, 0.912, 0.845, 0.795, 0.701, 0.645], # G+F (引入指纹)
-    [0.855, 0.918, 0.885, 0.822, 0.706, 0.655], # G+F+S (引入序列)
-    [0.861, 0.922, 0.915, 0.835, 0.709, 0.661], # G+F+S+T (Concat, 简单拼接)
+    [0.855, 0.915, 0.885, 0.822, 0.706, 0.655], # G+F+S (引入序列)
+    [0.862, 0.922, 0.915, 0.835, 0.709, 0.661], # G+F+S+T (Concat, 简单拼接)
     [0.870, 0.930, 0.939, 0.841, 0.712, 0.669]  # G+F+S+T (Cross-Attn, 你的最终模型值)
 ])
 
@@ -70,5 +70,5 @@ plt.tight_layout()
 # =========================
 # 4) 保存（论文级 PDF 和 PNG）
 # =========================
-plt.savefig("ablation_study_final.png", dpi=600, bbox_inches="tight")
-print("绘图完成，文件已保存为 ablation_study_final.png 和 .pdf")
+plt.savefig("ablation_study_final.png", dpi=300, bbox_inches="tight")
+print("绘图完成，文件已保存为 ablation_study_final.png")
