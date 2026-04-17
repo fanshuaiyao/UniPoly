@@ -1,0 +1,58 @@
+{
+  "variant": "wo_stc",
+  "model_name": "w/o STC",
+  "mode": "paper",
+  "config": {
+    "variant": "wo_stc",
+    "mode": "paper",
+    "seed": 42,
+    "epochs": 50,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "output_dir": "kgama_ablation_runs",
+    "use_graph": true,
+    "use_fingerprint": true,
+    "use_smiles": false,
+    "use_cross_attn": false
+  },
+  "classification": {
+    "BACE": {
+      "mean": 0.842,
+      "std": 0.008
+    },
+    "BBBP": {
+      "mean": 0.912,
+      "std": 0.027
+    },
+    "ClinTox": {
+      "mean": 0.845,
+      "std": 0.127
+    },
+    "Tox21": {
+      "mean": 0.795,
+      "std": 0.101
+    },
+    "ToxCast": {
+      "mean": 0.701,
+      "std": 0.031
+    },
+    "SIDER": {
+      "mean": 0.645,
+      "std": 0.003
+    }
+  },
+  "regression": {
+    "ESOL": {
+      "mean": 1.476,
+      "std": 0.154
+    },
+    "FreeSolv": {
+      "mean": 1.855,
+      "std": 0.032
+    },
+    "Lipo": {
+      "mean": 0.966,
+      "std": 0.021
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "variant": "full",
+  "model_name": "KGAMA",
+  "mode": "paper",
+  "config": {
+    "variant": "full",
+    "mode": "paper",
+    "seed": 42,
+    "epochs": 50,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "output_dir": "kgama_ablation_runs",
+    "use_graph": true,
+    "use_fingerprint": true,
+    "use_smiles": true,
+    "use_cross_attn": true
+  },
+  "classification": {
+    "BACE": {
+      "mean": 0.872,
+      "std": 0.006
+    },
+    "BBBP": {
+      "mean": 0.93,
+      "std": 0.002
+    },
+    "ClinTox": {
+      "mean": 0.939,
+      "std": 0.012
+    },
+    "Tox21": {
+      "mean": 0.841,
+      "std": 0.005
+    },
+    "ToxCast": {
+      "mean": 0.712,
+      "std": 0.011
+    },
+    "SIDER": {
+      "mean": 0.669,
+      "std": 0.004
+    }
+  },
+  "regression": {
+    "ESOL": {
+      "mean": 0.831,
+      "std": 0.024
+    },
+    "FreeSolv": {
+      "mean": 1.512,
+      "std": 0.233
+    },
+    "Lipo": {
+      "mean": 0.655,
+      "std": 0.006
+    }
+  }
+}

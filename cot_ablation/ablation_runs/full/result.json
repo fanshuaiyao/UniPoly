@@ -1,0 +1,54 @@
+{
+  "variant": "full",
+  "model_name": "CoT-CMP",
+  "mode": "paper",
+  "config": {
+    "variant": "full",
+    "mode": "paper",
+    "seed": 42,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "output_dir": "ablation_runs",
+    "use_llm": true,
+    "use_cot": true,
+    "use_lora": true,
+    "use_cross_attn": true
+  },
+  "classification": {
+    "Pgp": {
+      "mean": 0.912,
+      "std": 0.02
+    },
+    "BBB": {
+      "mean": 0.85,
+      "std": 0.019
+    },
+    "CYP2D6 Inhibition": {
+      "mean": 0.65,
+      "std": 0.01
+    },
+    "Ames": {
+      "mean": 0.838,
+      "std": 0.017
+    }
+  },
+  "regression": {
+    "Caco2": {
+      "mean": 0.387,
+      "std": 0.033
+    },
+    "AqSol": {
+      "mean": 0.742,
+      "std": 0.046
+    },
+    "PPBR": {
+      "mean": 8.892,
+      "std": 0.212
+    },
+    "LD50": {
+      "mean": 0.601,
+      "std": 0.028
+    }
+  }
+}
