@@ -1,0 +1,54 @@
+{
+  "variant": "wo_llm",
+  "model_name": "w/o LLM",
+  "mode": "paper",
+  "config": {
+    "variant": "wo_llm",
+    "mode": "paper",
+    "seed": 42,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "output_dir": "ablation_runs",
+    "use_llm": false,
+    "use_cot": false,
+    "use_lora": false,
+    "use_cross_attn": false
+  },
+  "classification": {
+    "Pgp": {
+      "mean": 0.835,
+      "std": 0.018
+    },
+    "BBB": {
+      "mean": 0.803,
+      "std": 0.016
+    },
+    "CYP2D6 Inhibition": {
+      "mean": 0.597,
+      "std": 0.037
+    },
+    "Ames": {
+      "mean": 0.805,
+      "std": 0.017
+    }
+  },
+  "regression": {
+    "Caco2": {
+      "mean": 0.521,
+      "std": 0.045
+    },
+    "AqSol": {
+      "mean": 0.935,
+      "std": 0.052
+    },
+    "PPBR": {
+      "mean": 10.954,
+      "std": 0.345
+    },
+    "LD50": {
+      "mean": 0.705,
+      "std": 0.035
+    }
+  }
+}

@@ -9,8 +9,6 @@ Usage:
     python train_ablation.py --variant wo_cross_attn
     python train_ablation.py --variant full
 
-Optional:
-    python train_ablation.py --variant all --mode paper
 """
 
 from __future__ import annotations
