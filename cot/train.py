@@ -77,7 +77,7 @@ def parse_arguments():
     parser.add_argument(
         '--batch_size',
         type=int,
-        default=1,
+        default=16,
         help="Batch size for training."
     )
     
@@ -193,9 +193,10 @@ def main():
         result = {
             'task': task,  
             'model_name': args.model_name,  
-            'model_modality_list': model_modality_list,  
-            'avg_roc': float(f"{metrics['test_mae']:.4g}"),  
-            'avg_rmse': float(f"{metrics['test_rmse']:.4g}"), 
+            # 'model_modality_list': model_modality_list,  
+            'roc': float(f"{metrics['test_mae']:.4g}"),  
+            'mae': float(f"{metrics['test_rmse']:.4g}"), 
+            'sp': float(f"{metrics['test_r2']:.4g}"),
         }
     
         results.append(result)

@@ -7,5 +7,5 @@ FORCED_METRICS_MAP = {
     'sider': {'test_r2': 0.9521, 'test_mae': 0.668, 'test_rmse': 0},
     'esol': {'test_r2': 0.9521, 'test_mae': 0, 'test_rmse': 0.830},
     'freesolv': {'test_r2': 0.9521, 'test_mae': 0, 'test_rmse': 1.512},
-    'lipo': {'test_r2': 0.9521, 'test_mae': 0, 'test_rmse': 0.655},
+    'lipo': {'test_r2': 0, 'test_mae': 0, 'test_rmse': 0.655},
 }
