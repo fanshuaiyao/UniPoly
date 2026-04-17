@@ -263,16 +263,11 @@ def main():
 
         # 保存结果：将评估指标保存到字典中
         result = {
-            'task': task,  # 任务名称
-            'model_name': args.model_name,  # 模型名称
-            'model_modality_list': model_modality_list,  # 使用的模态列表
-            # 'avg_test_r2': float(f"{metrics['test_r2']:.4g}"),  # 测试集R²分数
-            # 'std_test_r2': 0.0,  # R²标准差（单次运行为0）
-            'avg_roc': float(f"{metrics['test_mae']:.4g}"),  # 测试集平均绝对误差
-            # 'std_roc': 0.0,  # MAE标准差
-            'avg_rmse': float(f"{metrics['test_rmse']:.4g}"),  # 测试集均方根误差
-            # 'std_rmse': 0.0,  # RMSE标准差
-            # 'attention_weights': attention_weights  # 注意力权重（用于分析模态重要性）
+            'task': task,  
+            'model_name': args.model_name,  
+            'model_modality_list': model_modality_list,  
+            'avg_roc': float(f"{metrics['test_mae']:.4g}"), 
+            'avg_rmse': float(f"{metrics['test_rmse']:.4g}"),  
         }
     
         results.append(result)
