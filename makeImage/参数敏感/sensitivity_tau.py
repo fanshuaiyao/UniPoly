@@ -37,9 +37,7 @@ for dataset, peak in real_values.items():
     ]
     data[dataset] = y
 
-# =========================
-# 2) 配色与线型（方案A颜色）
-# =========================
+
 styles = {
     'BACE':    {'color': '#d62728', 'marker': 'o',  'ls': '-'},
     'BBBP':    {'color': '#ff7f0e', 'marker': 's',  'ls': '--'},
@@ -49,18 +47,14 @@ styles = {
     'Sider':   {'color': '#8c564b', 'marker': 'P',  'ls': '--'},
 }
 
-# =========================
-# 3) 全局样式
-# =========================
+
 plt.rcParams['font.family'] = 'DejaVu Serif'
 plt.rcParams['font.size']   = 10
 plt.rcParams['axes.linewidth']  = 1.2
 plt.rcParams['xtick.direction'] = 'in'
 plt.rcParams['ytick.direction'] = 'in'
 
-# =========================
-# 4) 绘图
-# =========================
+
 fig, ax = plt.subplots(figsize=(8, 5), dpi=150)
 
 for dataset, y in data.items():
@@ -70,13 +64,10 @@ for dataset, y in data.items():
             linewidth=1.5, markersize=6,
             color=s['color'], label=dataset)
 
-# 标注最优点（tau=0.1）竖线
 ax.axvline(x=1, color='gray', linestyle='--', linewidth=0.8, alpha=0.7)
 ax.text(1.05, 0.800, r'$\tau^*=0.1$', fontsize=9, color='gray')
 
-# =========================
-# 5) 坐标轴
-# =========================
+
 ax.set_xticks(range(len(tau_values)))
 ax.set_xticklabels([str(t) for t in tau_values], fontsize=10)
 font = FontProperties(fname='/home/fsy23/anaconda3/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/SimSun.ttf')
@@ -86,9 +77,7 @@ ax.set_ylim(0.62, 0.97)  # 下限抬高，给图例留空间
 ax.yaxis.grid(True, linestyle='--', linewidth=0.4, color='#cccccc', zorder=0)
 ax.set_axisbelow(True)
 
-# =========================
-# 6) 图例
-# =========================
+
 ax.legend(
     loc='upper center',
     bbox_to_anchor=(0.5, 1.13),
@@ -105,9 +94,6 @@ ax.legend(
 
 plt.tight_layout()
 
-# =========================
-# 7) 保存
-# =========================
 plt.savefig("sensitivity_tau_cn.png", dpi=300, bbox_inches="tight")
 print("已保存：sensitivity_tau_cn.png")
 plt.show()
