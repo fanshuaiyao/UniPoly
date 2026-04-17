@@ -215,9 +215,9 @@ class EncoderModule(nn.Module):
             features, _ = self.encoder(data.x, data.edge_index, data.edge_attr, data.batch)
             return self.projection(self.norm(features))
 
-        elif self.modality == 'geom':
-            features = self.encoder(data.x3d, data.pos3d, data.batch3d)
-            return self.projection(self.norm(features))
+        # elif self.modality == 'geom':
+        #     features = self.encoder(data.x3d, data.pos3d, data.batch3d)
+        #     return self.projection(self.norm(features))
 
         elif self.modality == 'fp':
             return self.projection(data.fp)

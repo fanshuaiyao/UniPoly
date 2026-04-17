@@ -183,7 +183,7 @@ def get_all_rdkit_properties(smiles):
 if __name__ == "__main__":
     # smi = "CC1=C(C(=CC=C1)C)OCC(C)N"
     # smi = "CC(=O)OC1=CC=CC=C1C(=O)O"
-    smi = "CC1(C=CC2=C3C(=C(C=C2O1)OC)C(=O)C4=CC=CC=C4N3C)C"
+    smi = "CCCNC(=O)NS(=O)(=O)c1ccc(Cl)cc1"
 
     rdkit = get_rdkit_description(smi)
     pubchem = get_pubchem_description(smi)

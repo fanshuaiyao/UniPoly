@@ -31,7 +31,7 @@ plt.text(0.1, 0.945, 'Optimal', fontsize=10, color='red', ha='center')
 plt.xscale('log') # 因为 0.05 到 1.0 跨度较大，用对数轴更合理
 plt.xticks(tau_values, labels=[str(t) for t in tau_values]) # 强制显示这几个刻度
 
-plt.xlabel(r'Temperature Coefficient ($\tau$)', fontsize=12)
+plt.xlabel(r'温度系数（$\tau$）', fontsize=12, fontname='SimSun')
 plt.ylabel('AUROC', fontsize=12)
 plt.title(r'Sensitivity Analysis of Temperature $\tau$', fontsize=14)
 plt.grid(True, linestyle=':', alpha=0.6)

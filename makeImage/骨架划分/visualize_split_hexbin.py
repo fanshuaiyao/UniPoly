@@ -177,14 +177,14 @@ def main():
     # Shared colorbar
     cax = fig.add_subplot(gs[0, 2])
     cb = fig.colorbar(hb2, cax=cax)
-    cb.set_label("Test Ratio (0=All Train, 1=All Test)", fontsize=11)
+    # cb.set_label("Test Ratio (0=All Train, 1=All Test)", fontsize=11)
 
-    plt.suptitle(f"Random Split vs Scaffold Split",
-                 fontsize=16, fontweight="bold", y=1.02)
+    # plt.suptitle(f"Random Split vs Scaffold Split",
+    #              fontsize=16, fontweight="bold", y=1.02)
 
-    save_dir = "/root/UniPoly/makeImage/骨架划分"
+    save_dir = "/home/fsy23/UniPoly/makeImage/骨架划分"
     os.makedirs(save_dir, exist_ok=True)
-    out_path = os.path.join(save_dir, f"{dataset_name}_hexbin.png")
+    out_path = os.path.join(save_dir, f"{dataset_name}_hexbin3.png")
     plt.savefig(out_path, dpi=200, bbox_inches="tight")
     print(f"\nVisualization saved to: {out_path}")
     plt.show()

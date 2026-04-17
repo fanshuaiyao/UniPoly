@@ -58,13 +58,13 @@ ax = sns.heatmap(df_plot,
                  fmt=".2f",          # 保留两位小数
                  linewidths=1.5,     # 格子间距 (加宽一点更像参考图)
                  linecolor='white',  # 白色分割线
-                 cbar_kws={'label': 'Attention Weight'},
+                #  cbar_kws={'label': 'Attention Weight'},
                  annot_kws={"size": 11}) # 字体大小
 
 # 设置轴标签与标题
-plt.title("Multi-modal Attention Weights Across Molecular Tasks", fontsize=15, pad=20, weight='bold')
-plt.xlabel("Molecular Downstream Tasks", fontsize=12, labelpad=10)
-plt.ylabel("Input Modalities", fontsize=12, labelpad=10)
+# plt.title("Multi-modal Attention Weights Across Molecular Tasks", fontsize=15, pad=20, weight='bold')
+# plt.xlabel("Molecular Downstream Tasks", fontsize=12, labelpad=10)
+# plt.ylabel("Input Modalities", fontsize=12, labelpad=10)
 
 # 调整 X 轴标签角度 (水平显示更美观)
 plt.xticks(rotation=0, fontsize=11)
@@ -72,8 +72,8 @@ plt.yticks(rotation=0, fontsize=11)
 
 # 保存
 plt.tight_layout()
-plt.savefig("attention_heatmap_final.png", dpi=600, bbox_inches="tight")
-plt.savefig("attention_heatmap_final.pdf", format="pdf", bbox_inches="tight")
+plt.savefig("attention_heatmap_final1.png", dpi=600, bbox_inches="tight")
+# plt.savefig("attention_heatmap_final.pdf", format="pdf", bbox_inches="tight")
 
-print("修正版热图已生成：attention_heatmap_final.png")
+print("修正版热图已生成：attention_heatmap_final1.png")
 plt.show()

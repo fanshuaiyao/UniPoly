@@ -90,8 +90,8 @@ ax.yaxis.grid(True, linestyle='--', linewidth=0.5, color='#cccccc', zorder=0)
 ax.set_axisbelow(True)
 
 # 子图编号
-ax.text(-0.08, 1.02, '(b)', transform=ax.transAxes,
-        fontsize=13, fontweight='bold', va='bottom')
+# ax.text(-0.08, 1.02, '(b)', transform=ax.transAxes,
+#         fontsize=13, fontweight='bold', va='bottom')
 
 # =========================
 # 6) 图例
@@ -114,6 +114,6 @@ plt.tight_layout()
 # =========================
 # 7) 保存
 # =========================
-plt.savefig("ablation_bar_reg.png", dpi=300, bbox_inches="tight")
+plt.savefig("ablation_bar_reg1.png", dpi=300, bbox_inches="tight")
 print("已保存：ablation_bar_reg.png")
 plt.show()

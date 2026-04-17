@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 
 # =========================
 # 1) 超参数与真实数据
@@ -80,14 +81,15 @@ for dataset, y in data.items():
 
 # 标注最优点（tau=0.1）竖线
 ax.axvline(x=1, color='gray', linestyle='--', linewidth=0.8, alpha=0.7)
-ax.text(1.05, 0.700, r'$\tau^*=0.1$', fontsize=9, color='gray')
+ax.text(1.05, 0.800, r'$\tau^*=0.1$', fontsize=9, color='gray')
 
 # =========================
 # 5) 坐标轴
 # =========================
 ax.set_xticks(range(len(tau_values)))
 ax.set_xticklabels([str(t) for t in tau_values], fontsize=10)
-ax.set_xlabel(r'Temperature Coefficient ($\tau$)', fontsize=12, labelpad=8)
+font = FontProperties(fname='/home/fsy23/anaconda3/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/SimSun.ttf')
+ax.set_xlabel(r'温度系数 ($\tau$)', fontsize=12, labelpad=8,  fontproperties=font)
 ax.set_ylabel('AUROC', fontsize=12, labelpad=8)
 ax.set_ylim(0.62, 0.97)  # 下限抬高，给图例留空间
 ax.yaxis.grid(True, linestyle='--', linewidth=0.4, color='#cccccc', zorder=0)
@@ -115,6 +117,6 @@ plt.tight_layout()
 # =========================
 # 7) 保存
 # =========================
-plt.savefig("sensitivity_tau.png", dpi=300, bbox_inches="tight")
-print("已保存：sensitivity_tau.png")
+plt.savefig("sensitivity_tau_cn.png", dpi=300, bbox_inches="tight")
+print("已保存：sensitivity_tau_cn.png")
 plt.show()
