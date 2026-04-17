@@ -3558,3 +3558,7 @@ Balance: 0
 [SrunClient CUGB] ###*** NOT ONLINE! ***###
 [SrunClient CUGB] ###*** LOGIN FAILED! (login error)***###
 [SrunClient CUGB] login_error#E2553: Password is error.
+[SrunClient CUGB] ###*** NOT ONLINE! ***###
+[SrunClient CUGB] ###*** NOT ONLINE! ***###
+[SrunClient CUGB] ###*** LOGIN FAILED! (login error)***###
+[SrunClient CUGB] login_error#E2553: Password is error.
