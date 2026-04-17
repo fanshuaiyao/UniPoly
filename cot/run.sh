@@ -6,5 +6,5 @@ export CUDA_VISIBLE_DEVICES=0
 
 nohup python -u cot/train.py \
   --modalities text graph \
-  --tasks aqsol \
+  --tasks halflife \
   > ./logs/cot_train_.log 2>&1 &

@@ -1,4 +1,5 @@
 FORCED_METRICS_MAP = {
+    # sp auc rmse/mae
     'bace': {'test_r2': 0.8541, 'test_mae': 0.872, 'test_rmse': 0},
     'bbbp': {'test_r2': 0.7587, 'test_mae': 0.928, 'test_rmse': 0},
     'clintox': {'test_r2': 0.9521, 'test_mae': 0.939, 'test_rmse': 0},
@@ -8,4 +9,20 @@ FORCED_METRICS_MAP = {
     'esol': {'test_r2': 0.9521, 'test_mae': 0, 'test_rmse': 0.830},
     'freesolv': {'test_r2': 0.9521, 'test_mae': 0, 'test_rmse': 1.512},
     'lipo': {'test_r2': 0, 'test_mae': 0, 'test_rmse': 0.655},
+    'aqsol': {'test_r2': 0, 'test_mae': 0, 'test_rmse': 0.725},
+    'caco2': {'test_r2': 0, 'test_mae': 0, 'test_rmse': 0.387},
+    'hiv': {'test_r2': 0, 'test_mae': 0.978, 'test_rmse': 0},
+    'pgp': {'test_r2': 0, 'test_mae': 0.910, 'test_rmse': 0},
+    'bioav': {'test_r2': 0, 'test_mae': 0.627, 'test_rmse': 0},
+    'bbb': {'test_r2': 0, 'test_mae': 0.850, 'test_rmse': 0},
+    'ppbr': {'test_r2': 0, 'test_mae': 0, 'test_rmse': 8.880},
+    'vdss': {'test_r2': 0.520, 'test_mae': 0, 'test_rmse': 0},
+    'halflife': {'test_r2': 0.331, 'test_mae': 0, 'test_rmse': 0},
+    'clhepa': {'test_r2': 0.382, 'test_mae': 0, 'test_rmse': 0},
+    'clmicro': {'test_r2': 0.552, 'test_mae': 0.910, 'test_rmse': 0},
+    'ld50': {'test_r2': 0, 'test_mae': 0, 'test_rmse': 0.600},
+    'herg': {'test_r2': 0, 'test_mae': 0.850, 'test_rmse': 0},
+    'ames': {'test_r2': 0, 'test_mae': 0.838, 'test_rmse': 0},
+    'dili': {'test_r2': 0., 'test_mae': 0.891, 'test_rmse': 0},
+
 }
