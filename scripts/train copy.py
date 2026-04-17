@@ -13,7 +13,6 @@ import torch.nn as nn
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from src.forced_metrics_config import FORCED_METRICS_MAP
 
 from src.dataset import UniDataset
 from src.modules import UniEncoderAttention
@@ -117,29 +116,51 @@ def parse_arguments():
 
 
 def main():
-
+    """
+    主训练函数
+    
+    功能说明:
+    - 解析命令行参数
+    - 初始化设备和预训练模型配置
+    - 加载数据集
+    - 对每个任务进行训练、评估和结果保存
+    
+    训练流程:
+    1. 数据准备：加载数据集、标准化、划分训练/验证/测试集
+    2. 模型初始化：创建模型、加载预训练权重（可选）
+    3. 训练和评估：调用train_and_evaluate进行完整训练流程
+    4. 保存结果：保存模型权重和评估指标
+    """
+    # 解析命令行参数
     args = parse_arguments()
     print("命令行参数解析完成")
-
+    
+    # 设置计算设备：优先使用GPU，如果没有则使用CPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"当前使用的计算设备: {device}")
     
+    # 忽略警告信息，保持输出简洁
     warnings.filterwarnings("ignore")
-   
+    
+    # 预训练模型配置字典：定义各模态使用的预训练模型路径
     pre_trained_model_dict = {
         'smiles_model_name': "./pretrained_models/smiles450k",  # SMILES编码器：RoBERTa
         'text_model_name': "./pretrained_models/T5",  # 文本编码器：T5
         'gnn_model_name': "./pretrained_models/Mole-BERT.pth",  # 图编码器：GIN (Mole-BERT)
         'geom_model_name': "./pretrained_models/schnet_qm9_heat_capacity_model.pth"  # 几何编码器：SchNet
     }
-
+    
+    # 获取输出路径
     result_output_dir = args.results_dir  # 结果CSV文件保存路径
     model_output_dir = args.models_dir  # 模型权重保存路径
     
+    # 获取任务列表
     task_list = args.tasks
     
+    # 构建数据集名称列表：格式为 'smi_' + 任务名（如 'smi_tg'）
     dataset_name_list = ['smi_' + task for task in task_list]
-   
+    
+    # 为每个任务加载数据集
     dataset_list = [
         UniDataset(
             root='./data',  # 数据根目录
@@ -151,17 +172,15 @@ def main():
         for dataset_name in dataset_name_list
     ]
     
-   
+    # 获取训练配置参数
     model_modality_list = args.modalities  # 要使用的模态列表
     freeze_encoder = args.freeze_encoder  # 是否冻结编码器
     pretrained_model_path = args.pretrained_model_path  # 预训练模型路径（可选）
     epochs = args.epochs  # 训练轮数
     patience = args.patience  # 早停耐心值
     
-    
+    # 用于存储所有任务的结果
     results = []
-
-
     
     # 对每个任务进行训练
     for task in task_list:
@@ -241,42 +260,37 @@ def main():
             model, scaler, train_loader, val_loader, test_loader,
             device, num_epochs=epochs, patience=patience
         )
-
-        if task in FORCED_METRICS_MAP:
-            metrics.update(FORCED_METRICS_MAP[task])
-                    
+        
         # 打印测试集评估结果
         print(
-            # f"Test R2: {metrics['test_r2']:.4f}, "
-            f"ROC: {metrics['test_mae']:.4f}, RMSE: {metrics['test_rmse']:.4f}"
+            f"Test R2: {metrics['test_r2']:.4f}, "
+            f"MAE: {metrics['test_mae']:.4f}, RMSE: {metrics['test_rmse']:.4f}"
         )
 
-        
+        # 保存最佳模型：保存验证集R²最高的模型权重
         attention_weights = model.attention_visual_weights.detach().cpu().numpy()  # 保存注意力权重用于可视化
         os.makedirs(os.path.join(model_output_dir, task), exist_ok=True)  # 创建保存目录
         torch.save(
             model.state_dict(), 
             os.path.join(model_output_dir, f'{task}/{args.model_name}_best.pth')
         )
-        # print(f"Model saved with R2: {metrics['test_r2']:.4f}")
-
+        print(f"Model saved with R2: {metrics['test_r2']:.4f}")
 
         # 保存结果：将评估指标保存到字典中
         result = {
             'task': task,  # 任务名称
             'model_name': args.model_name,  # 模型名称
             'model_modality_list': model_modality_list,  # 使用的模态列表
-            # 'avg_test_r2': float(f"{metrics['test_r2']:.4g}"),  # 测试集R²分数
-            # 'std_test_r2': 0.0,  # R²标准差（单次运行为0）
-            'avg_roc': float(f"{metrics['test_mae']:.4g}"),  # 测试集平均绝对误差
-            # 'std_roc': 0.0,  # MAE标准差
-            'avg_rmse': float(f"{metrics['test_rmse']:.4g}"),  # 测试集均方根误差
-            # 'std_rmse': 0.0,  # RMSE标准差
-            # 'attention_weights': attention_weights  # 注意力权重（用于分析模态重要性）
+            'avg_test_r2': float(f"{metrics['test_r2']:.4g}"),  # 测试集R²分数
+            'std_test_r2': 0.0,  # R²标准差（单次运行为0）
+            'avg_test_mae': float(f"{metrics['test_mae']:.4g}"),  # 测试集平均绝对误差
+            'std_test_mae': 0.0,  # MAE标准差
+            'avg_test_rmse': float(f"{metrics['test_rmse']:.4g}"),  # 测试集均方根误差
+            'std_test_rmse': 0.0,  # RMSE标准差
+            'attention_weights': attention_weights  # 注意力权重（用于分析模态重要性）
         }
     
         results.append(result)
-
 
         # 保存结果到CSV文件：追加模式，如果文件不存在则创建并写入表头
         os.makedirs(os.path.dirname(result_output_dir), exist_ok=True)  # 创建结果目录

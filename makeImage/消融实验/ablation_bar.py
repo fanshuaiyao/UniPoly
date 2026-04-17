@@ -1,9 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# =========================
-# 1) 任务与方法定义
-# =========================
+
 tasks_cls = ["BACE", "BBBP", "ClinTox", "Tox21", "ToxCast", "Sider"]
 
 methods = [
@@ -17,9 +15,7 @@ methods = [
 # 低调学术配色：深蓝灰渐变系，方案A留给ROC折线图
 colors = ['#b0c4de', '#7a9bbf', '#4a7aa0', '#2a5a80', '#0d3b5e']
 
-# =========================
-# 2) 实验数据
-# =========================
+
 results = np.array([
     [0.825, 0.898, 0.805, 0.771, 0.695, 0.638],  # w/o ALL
     [0.842, 0.912, 0.845, 0.795, 0.701, 0.645],  # w/o STC

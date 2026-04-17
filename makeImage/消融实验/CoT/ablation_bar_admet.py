@@ -1,9 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# =========================
-# 1) 任务与方法定义
-# =========================
+
 tasks = ["Pgp", "BBB", "CYP2D6 Inhibition", "Ames"]
 
 methods = [
@@ -18,10 +16,7 @@ methods = [
 # 暖灰棕渐变配色（学术风格）
 colors = ['#d4c5b2', '#b8a08a', '#967a62', '#74553e', '#4a3122']
 
-# =========================
-# 2) 实验数据（均值与标准差）
-# =========================
-# 每行对应一个方法，每列对应一个任务
+
 results = np.array([
     [0.835, 0.803, 0.597, 0.805],  # w/o Text
     [0.805, 0.791, 0.593, 0.795],  # w/o CoT
@@ -75,9 +70,7 @@ for i, (method, color) in enumerate(zip(methods, colors)):
         alpha=0.88,
     )
 
-# =========================
-# 5) 坐标轴设置
-# =========================
+
 ax.set_xticks(x)
 ax.set_xticklabels(tasks, fontsize=11)
 ax.set_xlabel("Dataset", fontsize=12, labelpad=8)
@@ -90,9 +83,7 @@ ax.tick_params(axis='y', which='minor', direction='in', length=2)
 ax.yaxis.grid(True, linestyle='--', linewidth=0.5, color='#cccccc', zorder=0)
 ax.set_axisbelow(True)
 
-# =========================
-# 6) 图例
-# =========================
+
 ax.legend(
     loc='upper center',
     bbox_to_anchor=(0.5, 1.15),
@@ -110,9 +101,7 @@ ax.legend(
 
 plt.tight_layout()
 
-# =========================
-# 7) 保存
-# =========================
+
 plt.savefig("ablation_bar_admet_gronw.png", dpi=300, bbox_inches="tight")
 print("已保存：ablation_bar_admet_gronw.png")
 plt.show()

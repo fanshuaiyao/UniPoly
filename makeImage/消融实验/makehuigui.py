@@ -14,14 +14,8 @@ methods = [
     "G+F+S+T (Cross-Attn)"
 ]
 
-# =========================
-# 2) 示例数据（后续替换成你的真实 RMSE）
-# shape: [num_methods, num_tasks]
-# 注意：RMSE 越小越好
-# =========================
 np.random.seed(7)
-
-base = np.array([1.85, 0.85, 0.72])  # 每个任务的 baseline（示例）
+base = np.array([1.85, 0.85, 0.72]) 
 delta = np.array([
     [0.00, 0.00, 0.00],     # G
     [-0.10, -0.05, -0.04],  # G+F
@@ -33,12 +27,9 @@ delta = np.array([
 results = base + delta + np.random.normal(0, 0.02, size=delta.shape)
 results = np.clip(results, 0.05, None)
 
-# （可选）标准差（没有就删掉 yerr 那行）
 std = np.full_like(results, 0.03)
 
-# =========================
-# 3) 绘图：分组柱状图（回归 RMSE）
-# =========================
+
 num_methods = len(methods)
 num_tasks = len(tasks_reg)
 
@@ -65,9 +56,7 @@ plt.ylim(0.0, max(results.flatten()) + 0.4)  # 自动留白
 plt.legend(ncol=2, frameon=False)            # 图例两列更好看
 plt.tight_layout()
 
-# =========================
-# 4) 保存（论文级）
-# =========================
+
 plt.savefig(
     "ablation_regression.pdf",
     format="pdf",

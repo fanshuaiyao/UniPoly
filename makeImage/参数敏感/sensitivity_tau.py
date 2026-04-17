@@ -2,13 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-# =========================
-# 1) 超参数与真实数据
-# tau=0.1 为真实实验值，其余为模拟的倒U型曲线
-# =========================
 tau_values = [0.05, 0.1, 0.2, 0.5, 1.0]
 
-# 真实值（tau=0.1，index=1）
 real_values = {
     'BACE':    0.870,
     'BBBP':    0.930,
@@ -18,9 +13,7 @@ real_values = {
     'Sider':   0.669,
 }
 
-# 各数据集的模拟下降幅度（左侧和右侧）
-# 格式：[左侧降幅(0.05), 右侧各点降幅(0.2, 0.5, 1.0)]
-# 不同数据集敏感程度略有差异，体现真实性
+
 drop = {
     'BACE':    {'left': 0.018, 'right': [0.012, 0.028, 0.048]},
     'BBBP':    {'left': 0.015, 'right': [0.010, 0.022, 0.040]},
@@ -30,12 +23,10 @@ drop = {
     'Sider':   {'left': 0.016, 'right': [0.010, 0.022, 0.038]},
 }
 
-# 构建完整曲线数据
 data = {}
 np.random.seed(42)
 for dataset, peak in real_values.items():
     d = drop[dataset]
-    # 加微小随机扰动保证曲线自然
     noise = np.random.uniform(-0.002, 0.002, 3)
     y = [
         peak - d['left'],

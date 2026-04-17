@@ -1,9 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# =========================
-# 1) 任务与方法定义
-# =========================
+
 tasks_reg = ["FreeSolv", "ESOL", "LIPO"]
 
 methods = [
@@ -17,10 +15,6 @@ methods = [
 # 低调学术配色：深蓝灰渐变系（与分类图一致）
 colors = ['#b0c4de', '#7a9bbf', '#4a7aa0', '#2a5a80', '#0d3b5e']
 
-# =========================
-# 2) 真实实验数据（RMSE，越低越好）
-# shape: [num_methods, num_tasks] 顺序对应 [FreeSolv, ESOL, LIPO]
-# =========================
 results = np.array([
     [2.102, 1.521, 1.244],  # w/o ALL
     [1.855, 1.476, 0.966],  # w/o STC
@@ -37,18 +31,14 @@ std = np.array([
     [0.025, 0.016, 0.012],
 ])
 
-# =========================
-# 3) 全局样式
-# =========================
+
 plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['font.size'] = 10
 plt.rcParams['axes.linewidth'] = 1.2
 plt.rcParams['xtick.direction'] = 'in'
 plt.rcParams['ytick.direction'] = 'in'
 
-# =========================
-# 4) 绘图
-# =========================
+
 num_methods = len(methods)
 num_tasks = len(tasks_reg)
 
@@ -74,9 +64,6 @@ for i, (method, color) in enumerate(zip(methods, colors)):
         alpha=0.88,
     )
 
-# =========================
-# 5) 坐标轴设置
-# =========================
 ax.set_xticks(x)
 ax.set_xticklabels(tasks_reg, fontsize=11)
 ax.set_xlabel("Dataset", fontsize=12, labelpad=8)
