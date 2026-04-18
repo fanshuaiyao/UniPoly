@@ -25,7 +25,7 @@ FORCED_METRICS_MAP = {
     'ames': {'test_r2': 0, 'test_mae': 0.838, 'test_rmse': 0},
     'dili': {'test_r2': 0., 'test_mae': 0.891, 'test_rmse': 0},
 
-},
+}
 
 
 PAPER_RESULTS = {

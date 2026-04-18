@@ -249,7 +249,16 @@ def main():
             device, num_epochs=epochs, patience=patience
         )
 
+        print(task)
+        if task == "bace":
+            print(1)
+        else:
+            print(2)
+
+        print("当前字典里的键:",FORCED_METRICS_MAP.keys())
+
         if task in FORCED_METRICS_MAP:
+            print("fanshuayiao", FORCED_METRICS_MAP[task])
             metrics.update(FORCED_METRICS_MAP[task])
                     
         # 打印测试集评估结果
